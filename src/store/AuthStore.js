@@ -36,7 +36,17 @@ export default {
                 commit("SET_TOKEN", token);
                 return { success: true };
             } catch (error) {
-                return { success: false, message: error.response?.data?.message || "Login failed" };
+                if (error.response) {
+                    // Server responded with an error
+                    return { success: false, message: error.response.data.message || "Login failed" };
+                } else if (error.request) {
+                    // No response was received from the server
+                    return { success: false, message: "No response from server" };
+                } else {
+                    // Something went wrong while setting up the request
+                    return { success: false, message: "An error occurred during login" };
+                }
+               
             }
         },
 
