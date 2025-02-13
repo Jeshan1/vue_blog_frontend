@@ -1,5 +1,5 @@
 <template>
-  <router-view /> <!-- ✅ Dynamically renders the matched route -->
+  <router-view /> <!-- Dynamically renders the matched route -->
 </template>
 
 <script setup>
