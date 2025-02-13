@@ -7,6 +7,7 @@ import Comment from "@/views/admin/pages/comments/CommentContent.vue";
 import AdminLayout from "@/views/admin/AdminLayout.vue";
 import Login from "@/views/pages/LoginPage.vue";
 import Register from "@/views/pages/RegisterPage.vue";
+import Contact from "@/views/admin/pages/contacts/ContactContent.vue";
 
 
 const routes = [
@@ -47,6 +48,12 @@ const routes = [
                 path:'comments',
                 name:'Comment',
                 component:Comment,
+                meta:{requiresAuth:true, requiresAdmin:true}
+            },
+            {
+                path:'contacts',
+                name:'Contact',
+                component:Contact,
                 meta:{requiresAuth:true, requiresAdmin:true}
             }
         ]
