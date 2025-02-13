@@ -29,8 +29,8 @@
           </tr>
         </thead>
 
-        <tbody class="whitespace-nowrap">
-          <tr class="hover:bg-gray-50" v-for="(contact,index) in getAllContacts" :key="contact.id">
+        <tbody class="whitespace-nowrap" v-if="getAllContacts.length > 0">
+          <tr class="hover:bg-gray-50"  v-for="(contact,index) in getAllContacts" :key="contact.id">
             <td class="p-4 text-[15px] text-gray-800">
               {{ index + 1 }}
             </td>
@@ -60,6 +60,9 @@
           </tr>
         </tbody>
       </table>
+      <div v-if="getAllContacts.length === 0">
+          <h1 class="text-xl font-bold text-red-600">No Any contacts found !!</h1>
+      </div>
     </div>
 </template>
 
