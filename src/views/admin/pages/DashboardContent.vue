@@ -99,11 +99,16 @@
       </div>
     </div>
 </div>
+
+
+<BlogAnalytics />
+ 
 </template>
 
 <script setup>
 import { computed, onMounted } from "vue";
 import { useStore } from "vuex";
+import BlogAnalytics from "../components/BlogAnalytics.vue"
 
 const store = useStore()
 
