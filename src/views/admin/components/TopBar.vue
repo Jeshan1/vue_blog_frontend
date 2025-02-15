@@ -43,7 +43,7 @@
   
   const logout = () => {
     store.dispatch("auth/logout")
-    router.push("/login")
+    router.push("/")
   }
   </script>
   
