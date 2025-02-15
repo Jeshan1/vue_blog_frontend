@@ -62,8 +62,14 @@ export default {
             }
         },
 
-        logout({ commit }) {
+        async logout({ commit }) {
             commit("LOGOUT");
+            commit("SET_USER",null)
+            // try {
+            //     const response = await axios.delete("http://localhost:8000/api/logout")
+            // } catch (error) {
+            //     console.log(error.message)
+            // }
         },
     },
 };
