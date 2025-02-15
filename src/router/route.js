@@ -8,7 +8,11 @@ import AdminLayout from "@/views/admin/AdminLayout.vue";
 import Login from "@/views/pages/LoginPage.vue";
 import Register from "@/views/pages/RegisterPage.vue";
 import Contact from "@/views/admin/pages/contacts/ContactContent.vue";
-
+import LayoutPage from "@/landing/LayoutPage.vue";
+import Home from "@/landing/HomeComponent.vue";
+import SingleBlog from "@/landing/SingleBlog.vue";
+import BlogClient from "@/landing/BlogComponent.vue";
+import ContactComponent from "@/landing/ContactComponent.vue";
 
 const routes = [
     {
@@ -20,6 +24,35 @@ const routes = [
         path:'/register',
         name:'Register',
         component:Register
+    },
+    {
+        path: "/",
+        component: LayoutPage, // Ensure LayoutPage is always loaded
+        children: [
+            {
+                path: "home",
+                name: "Home",
+                component: Home,
+                meta: { requiresAuth: false }, // Allow guests to access home
+            },
+            {
+                path:"blogs",
+                name:"BlogClient",
+                component:BlogClient,
+                meta:{requiresAuth:false}
+            },
+            {
+                path:"/blog/:id",
+                component:SingleBlog,
+                props:true
+            },
+            {
+                path:'contact',
+                name:'ContactComponent',
+                component:ContactComponent,
+                meta:{requiresAuth:false}
+            }
+        ]
     },
     {
         path:'/admin',
@@ -67,32 +100,33 @@ const router = createRouter({
     routes
 })
 
-// function getUserRole(){
-//     return localStorage.getItem('userRole')
-// }
-// function isAdmin(){
-//     return getUserRole() === 'admin'
-// }
 
 // Global Navigation Guard
 router.beforeEach((to, from, next) => {
     const isAuthenticated = store.getters["auth/isAuthenticated"];
     const user = store.getters["auth/getUser"];
-    const isAdmin = user?.role === "admin"; // Assuming user object has a "role" property
+    const isAdmin = user?.role === "admin"; 
+
     if (to.meta.requiresAuth) {
         if (isAuthenticated) {
             if (to.meta.requiresAdmin && !isAdmin) {
-                next("/login"); // Redirect non-admins to login
+                next("/home"); // Redirect non-admins to home layout instead of login
             } else {
                 next();
             }
         } else {
-            next("/login"); // Redirect unauthorized users to login
+            // If the user logs out from the admin dashboard, send them to home instead of login
+            if (from.path.startsWith("/admin")) {
+                next(); 
+            } else {
+                next("/login"); 
+            }
         }
     } else {
         next();
     }
 });
+
 
 export default router
 
