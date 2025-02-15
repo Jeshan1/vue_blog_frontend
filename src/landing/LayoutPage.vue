@@ -1,12 +1,13 @@
 <template>
-    <NavComponent/>
-    <div>
-        <h1>This is content</h1>
+    <NavComponent />
+    <div class="mx -24 my-5">
+        <router-view></router-view>
     </div>
-    <FooterComponent/>
+    <FooterComponent />
 </template>
 
 <script setup>
+
 import NavComponent from '../components/NavComponent.vue'
 import FooterComponent from '../components/FooterComponent.vue'
 
