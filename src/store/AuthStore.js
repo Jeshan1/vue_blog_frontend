@@ -62,14 +62,19 @@ export default {
             }
         },
 
-        async logout({ commit }) {
-            commit("LOGOUT");
-            commit("SET_USER",null)
-            // try {
-            //     const response = await axios.delete("http://localhost:8000/api/logout")
-            // } catch (error) {
-            //     console.log(error.message)
-            // }
-        },
+        async logout({ commit, state }) {
+            try {
+                await axios.post("http://localhost:8000/api/logout", {}, {
+                    headers: {
+                        Authorization: `Bearer ${state.token}` // Send token for authentication
+                    }
+                });
+        
+                commit("LOGOUT"); // Clear user state after successful logout
+            } catch (error) {
+                console.error("Logout error:", error.response?.data || error.message);
+            }
+        }
+        
     },
 };
