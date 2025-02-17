@@ -33,10 +33,10 @@
           <p class="text-md my-3 text-left text-gray-500">{{ blogData.blog.description }}</p>
           <div class="flex justify-between items-center gap-4 mt-4">
             <div>
-                <button @click="likeBlog" class="px-4  py-2 rounded-lg font-bold text-white bg-green-600">
+                <button v-bind="metadata.likes" @click="likeBlog" class="px-4  py-2 rounded-lg font-bold text-white bg-green-600">
                   👍 Like ({{ metadata.likes }})
                 </button>
-                <button @click="dislikeBlog" class="px-4 mx-2 py-2 rounded-lg font-bold text-white bg-red-600">
+                <button v-bind="metadata.dislikes" @click="dislikeBlog" class="px-4 mx-2 py-2 rounded-lg font-bold text-white bg-red-600">
                   👎 Dislike ({{ metadata.dislikes }})
                 </button>
             </div>
@@ -146,7 +146,13 @@ const commentForm = ref({
 });
 
 const comments = ref([]);
-const metadata = ref({ views: 0, likes: 0, dislikes: 0 });
+
+// Use reactive for metadata
+const metadata = reactive({
+  views: 0,
+  likes: 0,
+  dislikes: 0,
+});
 
 const isAuthenticated = computed(() => !!localStorage.getItem("token"));
 
@@ -240,7 +246,10 @@ const submitComment = async () => {
 const fetchMetadata = async () => {
   try {
     const response = await axios.get(`http://localhost:8000/api/client/blog/metadata/${route.params.id}`);
-    metadata.value = response.data || { views: 0, likes: 0, dislikes: 0 };
+    // Update metadata properties individually to maintain reactivity
+    metadata.views = response.data?.views || 0;
+    metadata.likes = response.data?.likes || 0;
+    metadata.dislikes = response.data?.dislikes || 0;
   } catch (error) {
     toast.error("Failed to fetch metadata.");
     console.error(error);
@@ -250,7 +259,7 @@ const fetchMetadata = async () => {
 const incrementViews = async () => {
   try {
     const response = await axios.post(`http://localhost:8000/api/client/blog/view/${route.params.id}`);
-    metadata.value.views = response.data.views; // Update views count
+    metadata.views = response.data.views; // Update views count
   } catch (error) {
     console.error("Error incrementing views:", error);
   }
@@ -278,12 +287,7 @@ const likeBlog = async () => {
 
     if (response.data.statusCode === 200) {
       likeStatus.value = true; // Mark the blog as liked
-      metadata.value = { // Force Vue to update metadata
-        likes: response.data.likes,
-        dislikes: metadata.value.dislikes, // Keep dislikes unchanged
-        views: metadata.value.views, // Keep views unchanged
-      };
-      fetchMetadata(); // Fetch updated metadata
+      metadata.likes = response.data.likes; // Update likes count
       toast.success(response.data.message);
     } else {
       toast.error(response.data.message);
@@ -314,13 +318,8 @@ const dislikeBlog = async () => {
 
     if (response.data.statusCode === 200) {
       dislikeStatus.value = true; // Mark the blog as disliked
-      metadata.value = { // Force Vue to update metadata
-        likes: metadata.value.likes, // Keep likes unchanged
-        dislikes: response.data.dislikes,
-        views: metadata.value.views, // Keep views unchanged
-      };
+      metadata.dislikes = response.data.dislikes; // Update dislikes count
       toast.success(response.data.message);
-      fetchMetadata(); // Fetch updated metadata
     } else {
       toast.error(response.data.message);
     }
@@ -330,8 +329,6 @@ const dislikeBlog = async () => {
     console.error("Error disliking blog:", error.response?.data || error.message);
   }
 };
-
-
 
 const readAloud = () => {
   if ("speechSynthesis" in window) {
@@ -368,7 +365,7 @@ onMounted(async () => {
   try {
     await fetchSingleBlog();
     await fetchComments();
-    fetchMetadata();
+    await fetchMetadata();
     await incrementViews();
     loadVoices();
   } catch (error) {
