@@ -30,13 +30,13 @@ const routes = [
         component: LayoutPage, // Ensure LayoutPage is always loaded
         children: [
             {
-                path: "home",
+                path: "/home",
                 name: "Home",
                 component: Home,
                 meta: { requiresAuth: false }, // Allow guests to access home
             },
             {
-                path:"blogs",
+                path:"/blogs",
                 name:"BlogClient",
                 component:BlogClient,
                 meta:{requiresAuth:false}
@@ -44,10 +44,11 @@ const routes = [
             {
                 path:"/blog/:id",
                 component:SingleBlog,
-                props:true
+                props:true,
+                meta:{requiresAuth:false}
             },
             {
-                path:'contact',
+                path:'/contact',
                 name:'ContactComponent',
                 component:ContactComponent,
                 meta:{requiresAuth:false}
