@@ -17,9 +17,10 @@
         </li>
         <!-- Menu Items -->
         <li v-for="item in menuItems" :key="item" class="max-lg:border-b max-lg:py-3 px-3">
-          <router-link :to="item" class="lg:hover:text-[#007bff] text-black block text-[15px]">
-            {{ item.toUpperCase() }}
+          <router-link :to="{ path: item }" class="lg:hover:text-[#007bff] text-black block text-[15px]">
+            {{ item.replace("/", "").toUpperCase() }}
           </router-link>
+
         </li>
 
         <!-- Login/Logout Button -->
@@ -72,7 +73,7 @@ const store = useStore();
 const router = useRouter();
 
 const isMenuOpen = ref(false);
-const menuItems = ["home", "contact", "feature", "blogs", "about"];
+const menuItems = ["/home", "/contact", "/feature", "/blogs", "/about"];
 
 const logValue = ref(!!localStorage.getItem("token"));
 
