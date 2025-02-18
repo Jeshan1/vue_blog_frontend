@@ -30,7 +30,7 @@
             </div>
 
             <div class="flex justify-between text-sm">
-              <a v-if="isLoginForm" href="#" class="text-blue-600 hover:underline">Forgot password?</a>
+              <router-link v-if="isLoginForm" to="/forgot-password" class="text-blue-600 hover:underline">Forgot password?</router-link>
             </div>
 
             <div class="mt-6">
