@@ -63,7 +63,7 @@ import { useRouter } from "vue-router";
 
 const store = useStore();
 const router = useRouter();
-
+const admin = computed(()=>store.getters["auth/isAdmin"])
 const isLoginForm = ref(true);
 const form = reactive({
   username: "",
@@ -94,17 +94,26 @@ const handleSubmit = async () => {
   const action = isLoginForm.value ? "auth/login" : "auth/register"; // Ensure 'auth' is used if using namespaced modules
   const payload = isLoginForm.value
     ? { email: form.email, password: form.password }
-    : { username: form.username, email: form.email, password: form.password };
+    : { name: form.username, email: form.email, password: form.password };
 
   try {
     const response = await store.dispatch(action, payload);
-    console.log(response);
-
-    if (response.success) {
-      router.push("/admin/dashboard");
-    } else {
-      errorMessage.value = response.message;
+    
+    if (response.success == true) {
+      if (admin.value) {
+        router.push("/admin/dashboard")
+      }
+      else if(!admin.value){
+        router.push("/home")
+      }
+      else{
+        errorMessage.value = "Unauthorized role"
+      }
     }
+    else{
+        errorMessage.value = response;
+    }
+
   } catch (error) {
     console.error("Error submitting form:", error);
   }
