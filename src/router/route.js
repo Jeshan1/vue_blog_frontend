@@ -13,6 +13,8 @@ import Home from "@/landing/HomeComponent.vue";
 import SingleBlog from "@/landing/SingleBlog.vue";
 import BlogClient from "@/landing/BlogComponent.vue";
 import ContactComponent from "@/landing/ContactComponent.vue";
+import ForgotPassword from "@/views/pages/ForgotPassword.vue";
+import ResetPassword from "@/views/pages/ResetPassword.vue";
 
 const routes = [
     {
@@ -24,6 +26,14 @@ const routes = [
         path:'/register',
         name:'Register',
         component:Register
+    },
+    {
+        path:'/forgot-password',
+        component:ForgotPassword
+    },
+    {
+        path:'/reset-password/:token',
+        component:ResetPassword
     },
     {
         path: "/",
