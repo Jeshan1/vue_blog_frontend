@@ -1,15 +1,35 @@
+
 <template>
-    <div class="mx-40 my-36 bg-[whitesmoke] p-5 text-left">
-        <h2 class="text-xl font-bold text-blue-600">Forgot Password</h2>
-        <form @submit.prevent="sendResetLink">
-            <div class="my-3">
-                <label for="email" class="text-xl font-bold">Email:</label>
-                <input type="email" id="email" v-model="resetData.email" required class="block bg-white h-10 px-4 py-2 w-full outline-none rounded" />
-            </div>
-            <button type="submit" class="bg-blue-600 px-4 py-2 text-white rounded">Send Reset Link</button>
-        </form>
-        <p v-if="message">{{ message }}</p>
+  <!-- Background image container -->
+  <div class="min-h-screen flex items-center justify-center bg-cover bg-center" :style="{ backgroundImage: 'url(https://t4.ftcdn.net/jpg/01/19/11/55/360_F_119115529_mEnw3lGpLdlDkfLgRcVSbFRuVl6sMDty.jpg)' }">
+    <!-- Form container -->
+    <div class="bg-[whitesmoke] rounded text-left p-10 w-full max-w-md">
+      <h2 class="text-xl font-bold text-blue-600">Forgot Password</h2>
+      <form @submit.prevent="sendResetLink" class="my-5">
+        <!-- Email Field -->
+        <div class="relative flex items-center sm:col-span-2 my-4">
+          <label for="email" class="text-[13px] bg-[whitesmoke] text-black absolute px-2 top-[-10px] left-[18px]">Email</label>
+          <input
+            type="email"
+            id="email"
+            v-model="resetData.email"
+            required
+            placeholder="Enter your email"
+            class="px-4 py-3.5 bg-white text-black w-full text-sm border-2 border-gray-100 focus:border-blue-500 rounded outline-none"
+          />
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="bg-blue-600 text-lg font-bold px-4 py-2 rounded hover:bg-blue-800 text-white w-full"
+        >
+          Send Reset Link
+        </button>
+      </form>
+      <p v-if="message" class="mt-4 text-center">{{ message }}</p>
     </div>
+  </div>
 </template>
 
 <script setup>
