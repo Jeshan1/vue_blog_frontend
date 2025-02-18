@@ -3,7 +3,7 @@ import axios from "axios";
 export default {
     namespaced: true,
     state: {
-        user: JSON.parse(localStorage.getItem("user")) || null, // Store user in localStorage
+        user: localStorage.getItem("user") || null, // Store user in localStorage
         token: localStorage.getItem("token") || null,
     },
     getters: {
