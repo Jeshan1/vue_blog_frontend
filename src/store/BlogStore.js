@@ -6,7 +6,7 @@ export default {
     blogs: [],
     selectedBlog: null,
     loading: false,
-    error: null
+    error: []
   },
   getters: {
     allBlogs: (state) => state.blogs,
@@ -71,8 +71,11 @@ export default {
           }
         );
         commit("ADD_BLOG", response.data.data);
+        console.log(response.data.message)
       } catch (error) {
         console.error(error);
+        const errorData = error.response.data
+        commit("SET_ERROR",errorData.message)
       }
     },
 
