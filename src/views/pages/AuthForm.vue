@@ -37,6 +37,9 @@
               <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
                 {{ isLoginForm ? 'Sign In' : 'Register' }}
               </button>
+              <button @click="googleLogin" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 my-2">
+                Sign In With Google
+              </button>
             </div>
 
             <p class="text-sm text-center text-gray-500 mt-4">
@@ -57,13 +60,16 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed } from "vue";
+import { reactive, ref, computed, onMounted,watch } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import axios from "axios";
+// import { useToast } from "vue-toastification";
 
+// const toast = useToast();
 const store = useStore();
 const router = useRouter();
-const admin = computed(()=>store.getters["auth/isAdmin"])
+const admin = computed(() => store.getters["auth/isAdmin"]);
 const isLoginForm = ref(true);
 const form = reactive({
   username: "",
@@ -91,32 +97,71 @@ const handleSubmit = async () => {
     return;
   }
 
-  const action = isLoginForm.value ? "auth/login" : "auth/register"; // Ensure 'auth' is used if using namespaced modules
+  const action = isLoginForm.value ? "auth/login" : "auth/register";
   const payload = isLoginForm.value
     ? { email: form.email, password: form.password }
     : { name: form.username, email: form.email, password: form.password };
 
   try {
     const response = await store.dispatch(action, payload);
-    
-    if (response.success == true) {
-      if (admin.value) {
-        router.push("/admin/dashboard")
-      }
-      else if(!admin.value){
-        router.push("/home")
-      }
-      else{
-        errorMessage.value = "Unauthorized role"
-      }
-    }
-    else{
-        errorMessage.value = response;
-    }
 
+    if (response.success) {
+      if (admin.value) {
+        router.push("/admin/dashboard");
+      } else {
+        router.push("/home");
+      }
+    } else {
+      errorMessage.value = response.message || "An error occurred";
+    }
   } catch (error) {
     console.error("Error submitting form:", error);
+    errorMessage.value = "An error occurred. Please try again.";
   }
 };
+
+
+const googleLogin = () => {
+  window.location.href = "http://localhost:8000/api/auth/google";
+};
+
+const handleRedirect = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get("token");
+  const user = urlParams.get("user");
+
+  if (token && user) {
+    try {
+      // Decode the user string from URL-encoded format
+      const decodedUser = JSON.parse(decodeURIComponent(user));
+      
+      // Save the token and user to localStorage
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(decodedUser));
+
+      // Optionally, you can set the axios default authorization header
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+      // Optionally, clean up the URL (remove token and user)
+      window.history.replaceState({}, "", window.location.pathname);
+
+      // Redirect to the home page
+      router.push("/home");
+    } catch (error) {
+      console.error("Error decoding user or token:", error);
+    }
+  }
+};
+
+
+
+
+onMounted(() => {
+  handleRedirect();
+});
+
+watch(() => window.location.search, () => {
+  handleRedirect();
+});
 
 </script>
