@@ -74,7 +74,34 @@ export default {
             } catch (error) {
                 console.error("Logout error:", error.response?.data || error.message);
             }
-        }
-        
+        },
+
+        // Add Google login action
+        async googleLogin({ commit }, token) {
+            try {
+              const response = await axios.get("http://localhost:8000/api/auth/google/callback", { token });
+              
+              if (response.data && response.data.token && response.data.user) {
+                const { token: authToken, user } = response.data;
+              
+                // Commit the user and token to Vuex store
+                commit("SET_USER", user);
+                commit("SET_TOKEN", authToken);
+              
+                // Optionally store token and user in localStorage as well
+                localStorage.setItem("token", authToken);
+                localStorage.setItem("user", JSON.stringify(user));
+              
+                return { success: true };
+              } else {
+                return { success: false, message: "Invalid response from server" };
+              }
+            } catch (error) {
+              console.error("Error during Google login:", error);
+              return { success: false, message: error.response?.data?.message || "Google login failed" };
+            }
+          }
+          
+     
     },
 };
