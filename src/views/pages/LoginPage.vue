@@ -2,7 +2,7 @@
     <AuthForm :isLoginForm="true" />
   </template>
   
-  <script setup>
+<script setup>
   import AuthForm from './AuthForm.vue';
-  </script>
+</script>
   
