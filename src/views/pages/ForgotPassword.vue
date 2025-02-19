@@ -35,6 +35,9 @@
 <script setup>
 import axios from 'axios';
 import {reactive} from 'vue'
+import { useToast } from 'vue-toastification';
+
+const toast = useToast()
 
 const resetData = reactive({
     email:'',
@@ -51,15 +54,16 @@ const sendResetLink = async()=>{
             }
         });
 
-        console.log(response)
-
         if (response.data.status === 'success') {
+          toast.success(response.data.message)
           resetData.message = response.data.message;
         } else {
+          toast.error(response.data.message)
           resetData.message = response.data.message;
         }
       } catch (error) {
         resetData.message = 'An error occurred. Please try again.';
+        toast.error(error.message)
         console.error(error);
       }
 }
