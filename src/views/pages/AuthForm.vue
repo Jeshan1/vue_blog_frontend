@@ -67,9 +67,9 @@ import { reactive, ref, computed, onMounted,watch } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import axios from "axios";
-// import { useToast } from "vue-toastification";
+import { useToast } from "vue-toastification";
 
-// const toast = useToast();
+const toast = useToast();
 const store = useStore();
 const router = useRouter();
 const admin = computed(() => store.getters["auth/isAdmin"]);
@@ -95,9 +95,34 @@ const toggleForm = () => {
 };
 
 const handleSubmit = async () => {
-  if (!isLoginForm.value && form.password !== form.confirmPassword) {
-    errorMessage.value = "Passwords do not match";
-    return;
+ 
+  if (!isLoginForm.value) {
+    if (!form.username || form.username.trim() === "" || form.username.length < 6) {
+      errorMessage.value = "Username is required.";
+      errorMessage.value = "Username must be at least 6 characters"
+      toast.error(errorMessage.value);
+      return;
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!form.email || !emailRegex.test(form.email)) {
+      errorMessage.value = "Please enter a valid email.";
+      toast.error(errorMessage.value);
+      return;
+    }
+
+    if (!form.password || form.password.length < 6) {
+      errorMessage.value = "Password must be at least 6 characters long.";
+      toast.error(errorMessage.value);
+      return;
+    }
+
+    if (form.password !== form.confirmPassword) {
+      errorMessage.value = "Passwords do not match.";
+      toast.error(errorMessage.value);
+      return;
+    }
   }
 
   const action = isLoginForm.value ? "auth/login" : "auth/register";
@@ -106,20 +131,23 @@ const handleSubmit = async () => {
     : { name: form.username, email: form.email, password: form.password };
 
   try {
-    const response = await store.dispatch(action, payload);
+     const response = await store.dispatch(action,payload);
 
     if (response.success) {
       if (admin.value) {
         router.push("/admin/dashboard");
+
       } else {
         router.push("/home");
       }
     } else {
       errorMessage.value = response.message || "An error occurred";
+      toast.error(errorMessage.value)
     }
   } catch (error) {
     console.error("Error submitting form:", error);
     errorMessage.value = "An error occurred. Please try again.";
+    toast.error(errorMessage.value)
   }
 };
 
