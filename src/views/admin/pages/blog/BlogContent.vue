@@ -39,7 +39,7 @@
             {{ blog.title }}
           </td>
           <td class="p-4 text-sm text-black flex-1">
-            {{ blog.description }}
+            {{ blog.description.split(" ").slice(0,10).join(" ") + "..." }}
           </td>
           <td class="text-sm text-black">
              <span v-for="category in blog.categories" :key="category.id">{{ category.cat_name }},</span> 
