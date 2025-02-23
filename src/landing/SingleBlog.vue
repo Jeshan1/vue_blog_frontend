@@ -33,14 +33,13 @@
           <p class="text-md my-3 text-left text-gray-500">{{ blogData.blog.description }}</p>
           <div class="flex justify-between items-center gap-4 mt-4">
             <div>
-                <button v-bind="metadata.likes" @click="likeBlog" class="px-4  py-2 rounded-lg font-bold text-white bg-green-600">
-                  👍 Like ({{ metadata.likes }})
-                </button>
-                <button v-bind="metadata.dislikes" @click="dislikeBlog" class="px-4 mx-2 py-2 rounded-lg font-bold text-white bg-red-600">
-                  👎 Dislike ({{ metadata.dislikes }})
-                </button>
+                <input type="button" value="Like" @click="likeBlog" class="px-4  py-2 rounded-lg font-bold text-white bg-green-600" />
+                  <span> 👍 Like {{ total.totalLikes }} </span>
+                
+                <input type="button" value="Dislike" @click="dislikeBlog" class="px-4 mx-2 py-2 rounded-lg font-bold text-white bg-red-600" />
+                  <span> 👎 Dislike {{ total.totalDislikes }} </span>
             </div>
-            <button>Views : {{ metadata.views }}</button>
+            <span>Views : {{ metadata.views }}</span>
           </div>
           <!-- Social Media Share Buttons -->
           <h1 class="text-xl font-bold text-blue-600 text-left">Share in social media</h1>
@@ -66,6 +65,7 @@
                 placeholder="Type your name...."
                 class="w-full p-4 my-2 rounded-xl font-bold border-2 border-blue-600"
               />
+              <p v-if="v$.name.$error" class="text-red-600">{{ getErrorMessage('name') }}</p>
               <textarea
                 v-model="commentForm.comment"
                 cols="30"
@@ -73,6 +73,7 @@
                 placeholder="Type your comments..."
                 class="w-full p-4 rounded-xl font-bold border-2 border-blue-600"
               ></textarea>
+              <p v-if="v$.comment.$error" class="text-red-600">{{ getErrorMessage('comment') }}</p>
               <button type="submit" class="text-lg font-bold px-4 py-2 rounded-xl bg-blue-600 text-white">
                 Submit
               </button>
@@ -112,14 +113,13 @@
             <span class="font-semibold">{{ recentBlog.month }}</span>
           </div>
           <!-- Blog Title and Description -->
-          <div class="flex flex-col justify-between">
-            <div class="flex md:gap-4 gap-2 text-sm text-gray-700 font-semibold">
-              <span class="flex gap-1 items-center"><ion-icon name="person-outline"></ion-icon>By Admin</span>
+          <div class="text-left">
+              <router-link :to="'blog/' + recentBlog.id">
+              <h3 class="text-lg text-left md:text-lg font-semibold text-teal-900 capitalize chelsea-market-regular">{{ recentBlog.title }}</h3>
+              <p class="text-md text-gray-500 tex-left">{{ recentBlog.description.split(" ").slice(0,9).join(" ") + "..." }}</p>
+              </router-link>
             </div>
-            <h3 class="text-lg text-left md:text-lg font-semibold text-teal-900 capitalize chelsea-market-regular">{{ recentBlog.title }}</h3>
-            <p class="text-md text-gray-500">{{ recentBlog.description }}</p>
           </div>
-        </div>
       </div>
     </div>
   </div>
@@ -127,10 +127,13 @@
 
 
 <script setup>
+import useVuelidate from "@vuelidate/core";
+import { required,minLength,maxLength } from "@vuelidate/validators";
 import axios from "axios";
 import { onMounted, reactive, computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
+
 
 const toast = useToast();
 const route = useRoute();
@@ -148,7 +151,7 @@ const commentForm = ref({
 const comments = ref([]);
 
 // Use reactive for metadata
-const metadata = reactive({
+let metadata = reactive({
   views: 0,
   likes: 0,
   dislikes: 0,
@@ -200,7 +203,7 @@ const fetchSingleBlog = async () => {
 const fetchComments = async () => {
   try {
     const response = await axios.get(`http://localhost:8000/api/client/comment/${route.params.id}`);
-    if (response.data.statusCode === 200) {
+    if (response.data.status === 200) {
       comments.value = response.data.data;
     } else {
       toast.error("Failed to fetch comments.");
@@ -211,13 +214,30 @@ const fetchComments = async () => {
   }
 };
 
+const rules = {
+  name:{required,minLength:minLength(3),maxLength:maxLength(20)},
+  comment:{required,minLength:minLength(5),maxLength:maxLength(300)}
+}
+
+const getErrorMessage = (field) => {
+  if (!v$.value[field].$dirty) return ""; // Don't show errors unless the field is touched
+  if (v$.value[field].required.$invalid) return `${field === "name" ? "Name" : "Comment"} is required.`;
+  if (v$.value[field].minLength.$invalid) return `${field === "name" ? "Name" : "Comment"} must be at least ${v$.value[field].minLength.$params.min} characters.`;
+  if (v$.value[field].maxLength.$invalid) return `${field === "name" ? "Name" : "Comment"} must be less than ${v$.value[field].maxLength.$params.max} characters.`;
+  return "";
+};
+
+
+const v$ = useVuelidate(rules,commentForm)
+
 const submitComment = async () => {
+  const isvalid = await v$.value.$validate()
   if (!isAuthenticated.value) {
     toast.error("You must be logged in to post a comment.");
     return;
   }
-  if (!commentForm.value.name || !commentForm.value.comment) {
-    toast.error("Please fill in all fields.");
+  if (!isvalid) {
+    toast.error("Please correct the errors before submitting.");
     return;
   }
   try {
@@ -230,26 +250,32 @@ const submitComment = async () => {
         },
       }
     );
-    if (response.data.statusCode === 200) {
+    if (response.data.status === 201) {
       toast.success(response.data.message);
       commentForm.value = { name: "", comment: "" };
+      v$.value.$reset()
       fetchComments();
     } else {
       toast.error(response.data.message);
     }
   } catch (error) {
-    toast.error("Error submitting comment.");
+    toast.error(error.message);
     console.error(error);
   }
 };
 
+const total = reactive({
+   totalLikes:0,
+   totalDislikes:0,
+   totalViews:0
+})
+
 const fetchMetadata = async () => {
   try {
     const response = await axios.get(`http://localhost:8000/api/client/blog/metadata/${route.params.id}`);
-    // Update metadata properties individually to maintain reactivity
-    metadata.views = response.data?.views || 0;
-    metadata.likes = response.data?.likes || 0;
-    metadata.dislikes = response.data?.dislikes || 0;
+    total.totalLikes = response.data.total_likes,
+    total.totalDislikes = response.data.total_dislikes,
+    total.totalViews = response.data.total_views
   } catch (error) {
     toast.error("Failed to fetch metadata.");
     console.error(error);
@@ -259,7 +285,7 @@ const fetchMetadata = async () => {
 const incrementViews = async () => {
   try {
     const response = await axios.post(`http://localhost:8000/api/client/blog/view/${route.params.id}`);
-    metadata.views = response.data.views; // Update views count
+    metadata.views += response.data.data; // Update views count
   } catch (error) {
     console.error("Error incrementing views:", error);
   }
@@ -285,9 +311,9 @@ const likeBlog = async () => {
       }
     );
 
-    if (response.data.statusCode === 200) {
+    if (response.data.status === 201) {
       likeStatus.value = true; // Mark the blog as liked
-      metadata.likes = response.data.likes; // Update likes count
+      metadata.likes = response.data.likes; // ✅ Correctly update likes count
       toast.success(response.data.message);
     } else {
       toast.error(response.data.message);
@@ -298,6 +324,7 @@ const likeBlog = async () => {
     console.error("Error liking blog:", error.response?.data || error.message);
   }
 };
+
 
 const dislikeBlog = async () => {
   if (!isAuthenticated.value) {
@@ -316,9 +343,9 @@ const dislikeBlog = async () => {
       }
     );
 
-    if (response.data.statusCode === 200) {
+    if (response.data.status === 201) {
       dislikeStatus.value = true; // Mark the blog as disliked
-      metadata.dislikes = response.data.dislikes; // Update dislikes count
+      metadata.dislikes = response.data.dislikes; // ✅ Correctly update dislikes count
       toast.success(response.data.message);
     } else {
       toast.error(response.data.message);
@@ -329,6 +356,7 @@ const dislikeBlog = async () => {
     console.error("Error disliking blog:", error.response?.data || error.message);
   }
 };
+
 
 const readAloud = () => {
   if ("speechSynthesis" in window) {
