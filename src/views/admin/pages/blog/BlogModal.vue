@@ -1,6 +1,6 @@
 <template>
   <div v-if="props.isOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-    <div class="bg-white p-5 rounded-md text-left w-96">
+    <div class="bg-white p-5 rounded-md text-left w-[80%]">
       <h2 class="text-xl text-left mb-4">{{ isEditMode ? 'Edit Blog' : 'Add Blog' }}</h2>
        <!-- Error Message Display -->
        <div v-if="props.error" class="bg-red-200 text-red-800 p-2 mb-3 rounded">
@@ -15,11 +15,12 @@
       <span v-if="errorMessages.title" class="text-red-500 text-sm">{{ errorMessages.title }}</span>
 
       <!-- Description Input -->
-      <textarea
+      <Editor
+        api-key="5q6j2krzvx5bp70hskm111h9iggk6bj2brxjm9mxiwv5hr2v"
         v-model="blogData.description"
-        placeholder="Enter blog description"
-        class="border p-2 w-full mb-3"
-      ></textarea>
+        :init="editorConfig"
+        class="mb-3"
+      />
       <span v-if="errorMessages.description" class="text-red-500 text-sm">{{ errorMessages.description }}</span>
 
       <!-- Category Selection (Multi-Select) -->
@@ -59,7 +60,7 @@
 
 <script setup>
 import { defineProps, defineEmits, watch, computed, reactive} from 'vue';
-
+import Editor from '@tinymce/tinymce-vue'
 // Props to control modal visibility, the blog being edited, and available categories
 const props = defineProps({
   isOpen: {
@@ -97,6 +98,14 @@ const errorMessages = reactive({
   description: "",
   categories: "",
 });
+
+// TinyMCE Configuration
+const editorConfig = {
+  height: 300,
+  menubar: false,
+  plugins: 'lists link code',
+  toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image',
+};
 
 
 // Computed property to check if we're editing an existing blog
