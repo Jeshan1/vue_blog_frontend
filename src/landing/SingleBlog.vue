@@ -25,9 +25,14 @@
               {{ blogData.blog.title }}
             </h3>
             <!-- Read Aloud Button -->
-            <button @click="readAloud" class="mt-4 p-2 bg-teal-600 text-white rounded-md hover:bg-teal-700">
-              🔊 Read Aloud
-            </button>
+            <div>
+              <button @click="readAloud" class="mt-4 p-2 bg-teal-600 text-white rounded-md hover:bg-teal-700">
+                🔊 Read Aloud
+              </button>
+              <button @click="downloadPdf" class="mt-4 p-2 ml-2 bg-red-600 text-white rounded-md hover:bg-teal-700">
+                Download pdf
+              </button>
+            </div>
           </div>
           <!-- Blog Description -->
           <p class="text-md my-3 text-left text-gray-500">{{ blogData.blog.description }}</p>
@@ -386,6 +391,24 @@ const loadVoices = () => {
     console.warn("Speech synthesis not supported.");
   }
 };
+
+const downloadPdf = async() => {
+  try {
+    const response = await axios.get(
+      `http://localhost:8000/api/client/blog/${route.params.id}/pdf`,
+      { responseType: "blob" }
+    );
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "blog.pdf");
+    document.body.appendChild(link);
+    link.click();
+    toast.success("PDF downloaded");
+  } catch {
+    toast.error("Failed to download PDF");
+  }
+}
 
 const loading = ref(true); // Add a loading state
 
