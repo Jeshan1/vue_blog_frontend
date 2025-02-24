@@ -80,14 +80,8 @@ const logValue = ref(!!localStorage.getItem("token"));
 
 const logout = async () => {
   await store.dispatch("auth/logout");
-
-  // Ensure the token is removed
   localStorage.removeItem("token");
-
-  // Update reactive state
   logValue.value = false;
-
-  // Redirect after logout
   router.push("/home");
 };
 
