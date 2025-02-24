@@ -111,7 +111,7 @@ const editorConfig = {
 // Computed property to check if we're editing an existing blog
 const isEditMode = computed(() => props.blogToEdit !== null);
 
-// Watch for changes in `blogToEdit` and update the form
+// Watch for changes in blogToEdit and update the form
 watch(
   () => props.blogToEdit,
   (newBlogToEdit) => {
