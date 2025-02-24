@@ -12,6 +12,9 @@ A Vue.js-based blogging platform frontend that interacts with a backend API to d
 - Read a loud feature added in client side
 - Specific Blog download by converting pdf
 - Seamless API integrated and implemented
+- Single Sign On with google implemented
+- Go To Top button added and navbar activated
+- Search blog feature added
 
 ## 📌 Installation
 
