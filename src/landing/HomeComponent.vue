@@ -8,7 +8,7 @@
     </div>
 
     <div> 
-        <h1 class="text-2xl font-bold text-blue-600 my-5">Our Blogs</h1>
+        <h1 class="text-2xl font-bold text-blue-600 my-5">Our Recent Blogs</h1>
         <SliderComponent />
     </div>
 
