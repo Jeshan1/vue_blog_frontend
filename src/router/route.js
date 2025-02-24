@@ -15,7 +15,8 @@ import BlogClient from "@/landing/BlogComponent.vue";
 import ContactComponent from "@/landing/ContactComponent.vue";
 import ForgotPassword from "@/views/pages/ForgotPassword.vue";
 import ResetPassword from "@/views/pages/ResetPassword.vue";
-
+import AboutComponent from "@/landing/AboutComponent.vue";
+import FeatureComponent from "@/landing/FeatureComponent.vue";
 const routes = [
     {
         path:'/login',
@@ -61,6 +62,18 @@ const routes = [
                 path:'/contact',
                 name:'ContactComponent',
                 component:ContactComponent,
+                meta:{requiresAuth:false}
+            },
+            {
+                path:'/about',
+                name:'AboutComponent',
+                component:AboutComponent,
+                meta:{requiresAuth:false}
+            },
+            {
+                path:'/feature',
+                name:'FeatureComponent',
+                component:FeatureComponent,
                 meta:{requiresAuth:false}
             }
         ]
