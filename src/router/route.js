@@ -39,9 +39,10 @@ const routes = [
     {
         path: "/",
         component: LayoutPage, // Ensure LayoutPage is always loaded
+        redirect:'/home',
         children: [
             {
-                path: "/home",
+                path: "home",
                 name: "Home",
                 component: Home,
                 meta: { requiresAuth: false }, // Allow guests to access home
