@@ -2,10 +2,10 @@
   <header class="flex border-b py-3 px-4 sm:px-10 bg-white font-[sans-serif] min-h-[65px] tracking-wide relative z-50">
     <div class="flex flex-wrap justify-between items-center gap-4 mx-24 w-full">
       <a href="#" class="max-sm:hidden">
-        <img src="https://readymadeui.com/readymadeui.svg" alt="logo" class="w-32" />
+        <img src="logo.png" alt="logo" class="w-20 rounded-full" />
       </a>
       <a href="#" class="hidden max-sm:block">
-        <img src="https://readymadeui.com/readymadeui-short.svg" alt="logo" class="w-8" />
+        <img src="logo.png" alt="logo" class="w-8" />
       </a>
 
       <!-- Desktop & Mobile Menu -->
@@ -13,7 +13,7 @@
         :class="{ 'max-lg:hidden': !isMenuOpen }">
         <!-- Mobile Logo -->
         <li class="mb-6 hidden max-lg:block">
-          <a href="#"><img src="https://readymadeui.com/readymadeui.svg" alt="logo" class="w-36" /></a>
+          <a href="#"><img src="logo.png" alt="logo" class="w-20" /></a>
         </li>
         <!-- Menu Items -->
         <li v-for="item in menuItems" :key="item" class="max-lg:border-b max-lg:py-3 px-3">
@@ -68,6 +68,7 @@
 import { ref, watch, onMounted } from 'vue';
 import { useRouter } from "vue-router";
 import { useStore } from 'vuex';
+
 
 const store = useStore();
 const router = useRouter();
