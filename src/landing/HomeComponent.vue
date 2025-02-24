@@ -12,9 +12,9 @@
         <SliderComponent />
     </div>
 
+
 </template>
 
 <script setup>
 import SliderComponent from "@/components/SliderComponent.vue";
-
 </script>
