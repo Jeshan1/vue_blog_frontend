@@ -77,7 +77,7 @@
           </div>
         </div>
 
-        <p class='text-gray-300 text-sm mt-10'>© ReadymadeUI. All rights reserved.
+        <p class='text-gray-300 text-sm mt-10'>© <a href="https://www.linkedin.com/in/jeshan-tiwari-012ab527b/">Jeshan Tiwari</a>. All rights reserved.
         </p>
       </div>
     </footer>
