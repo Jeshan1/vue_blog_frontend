@@ -17,7 +17,7 @@
         </li>
         <!-- Menu Items -->
         <li v-for="item in menuItems" :key="item" class="max-lg:border-b max-lg:py-3 px-3">
-          <router-link :to="{ path: item }" class="lg:hover:text-[#007bff] text-black block text-[15px]">
+          <router-link :to="{ path: item }" class="lg:hover:text-[#007bff] text-black block text-[15px]" :class="{ 'text-blue-600 font-bold border-b-2 border-blue-600': route.path === item }">
             {{ item.replace("/", "").toUpperCase() }}
           </router-link>
 
@@ -66,13 +66,13 @@
 
 <script setup>
 import { ref, watch, onMounted } from 'vue';
-import { useRouter } from "vue-router";
+import { useRouter,useRoute } from "vue-router";
 import { useStore } from 'vuex';
 
 
 const store = useStore();
 const router = useRouter();
-
+const route = useRoute()
 const isMenuOpen = ref(false);
 const menuItems = ["/home", "/contact", "/feature", "/blogs", "/about"];
 
