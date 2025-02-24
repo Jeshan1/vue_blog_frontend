@@ -73,20 +73,6 @@ vue_blog_frontend/
 │── README.md         # Project documentation
 ```
 
-## 🚀 Deployment
-### Deploy to Vercel
-```bash
-npm install -g vercel
-vercel
-```
-Follow the setup instructions to deploy the frontend.
-
-### Deploy to Netlify
-```bash
-netlify deploy --prod
-```
-Ensure you have configured environment variables in the Netlify dashboard.
-
 ## 🤝 Contributing
 1. Fork the repository
 2. Create a new branch: `git checkout -b feature-name`
