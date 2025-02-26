@@ -12,9 +12,32 @@
         <SliderComponent />
     </div>
 
-
+    
 </template>
 
 <script setup>
 import SliderComponent from "@/components/SliderComponent.vue";
+import axios from "axios";
+import { onMounted } from "vue";
+import { useToast } from "vue-toastification";
+
+const toast = useToast()
+
+
+
+const fetchWelcomeMessage = async() => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/welcome-message");
+        const message = response.data.data.message
+        toast.success(message)
+      } catch (error) {
+        toast.error(error.message)
+      }
+}
+
+onMounted(()=>{
+  setInterval(()=>{
+    fetchWelcomeMessage()
+  },600000)
+})
 </script>
